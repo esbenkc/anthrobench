@@ -1,4 +1,7 @@
-if __name__ == "__main__":
-    from src import app
+import utils
 
-    app.run()
+if __name__ == "__main__":
+    # Pass argument for model testing
+    model = "text-davinci-003"
+
+    print("Hello World!")
