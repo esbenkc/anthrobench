@@ -18,7 +18,9 @@ read_csv_with_filename <- function(file) {
 }
 
 # Read all CSV files and merge them together
-merged_data <- map_dfr(csv_files, read_csv_with_filename)
+merged_data <- map_dfr(csv_files, read_csv_with_filename) %>% 
+  mutate(evaluation=if_else(str_detect(evaluation,"non-"), str_extract(evaluation, "non-anthropomorphic"), str_extract(evaluation,"anthropomorphic")),
+         model=str_extract(file_name,"gpt-4o|gpt-4-turbo|gpt-3.5-turbo|claude-3-opus"))
 
 # Print the merged data
 print(merged_data)
@@ -26,17 +28,22 @@ print(merged_data)
 
 ```{r}
 merged_data %>%
-  group_by(file_name, evaluation) %>%
+  group_by(model, evaluation) %>%
+  summarise(
+    count = n(),
+  ) 
+
+merged_data %>%
+  group_by(model, evaluation) %>%
   summarise(
     count = n(),
   ) %>%
   ggplot() +
-  aes(fill = evaluation, y = count, x = file_name) +
-  geom_col() +
+  aes(fill = evaluation, x = count, y = model) +
+  geom_col(color="black") +
   labs(
-    title = "Evaluation Counts by File",
-    x = "File Name",
-    y = "Count",
+    y = "Model",
+    x = NULL,
     fill = "Evaluation"
   ) +
   theme_minimal() +
@@ -53,7 +60,8 @@ merged_data %>%
     legend.position = "bottom"
   ) +
   scale_fill_manual(values = c("#1F77B4", "#FF7F0E", "#2CA02C", "#D62728")) +
-  coord_flip()
+  coord_flip() +
+  coord_cartesian(expand=F)
 
 ggsave("../results/eval_results.png")
 ```

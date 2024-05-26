@@ -4,7 +4,7 @@ from utils import eval_responses, save_result, request_response
 
 def run(dataset="anthrobench.csv", model="gpt-4o"):
     # Load dataset
-    df = pd.read_csv(dataset)
+    df = pd.read_csv(dataset, sep="\t")
     # Run model over dataset
     df["response"] = df["question"].apply(lambda x: request_response(x, model))
     # Evaluate responses

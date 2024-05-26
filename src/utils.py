@@ -1,16 +1,13 @@
 from openai import OpenAI
 import pandas as pd
+import anthropic
 
 client = OpenAI()
 
-OPENAI_CHAT_MODELS = [
-    "gpt-4o",
-    "gpt-4",
-    "gpt-3",
-]
+OPENAI_CHAT_MODELS = ["gpt-4o", "gpt-4", "gpt-4-turbo", "gpt-3", "gpt-3.5-turbo"]
 
 ANTHROPIC_CHAT_MODELS = [
-    "claude",
+    "claude-3-opus-20240229",
 ]
 
 
@@ -68,6 +65,16 @@ def request_response(prompt, model="gpt-4o", system="You are a helpful assistant
             max_tokens=200,
         )
         response = response.choices[0].message.content
+    elif model in ANTHROPIC_CHAT_MODELS:
+        print("System prompt not supported for Anthropic models")
+        message = anthropic.Anthropic().messages.create(
+            model=model,
+            max_tokens=200,
+            messages=[
+                {"role": "user", "content": prompt},
+            ],
+        )
+        response = message.content[0].text
     return response
 
 
