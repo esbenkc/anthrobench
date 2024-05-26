@@ -1,7 +1,11 @@
-import utils
+from anthrobench import run
+import argparse
 
 if __name__ == "__main__":
-    # Pass argument for model testing
-    model = "text-davinci-003"
-
-    print("Hello World!")
+    parser = argparse.ArgumentParser(description="Create a ArcHydro schema")
+    parser.add_argument(
+        "--dataset", type=str, default="anthrobench.csv", help="Dataset to use"
+    )
+    parser.add_argument("--model", type=str, default="gpt-4o", help="Model to use")
+    args = parser.parse_args()
+    run(args.dataset, args.model)
