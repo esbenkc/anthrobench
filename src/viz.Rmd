@@ -26,7 +26,7 @@ merged_data <- map_dfr(csv_files, read_csv_with_filename) %>%
 print(merged_data)
 ```
 
-```{r}
+```{r fig.height=2, fig.width=7}
 merged_data %>%
   group_by(model, evaluation) %>%
   summarise(
@@ -40,7 +40,7 @@ merged_data %>%
   ) %>%
   ggplot() +
   aes(fill = evaluation, x = count, y = model) +
-  geom_col(color="black") +
+  geom_col(color="black", width=1) +
   labs(
     y = "Model",
     x = NULL,
@@ -59,9 +59,10 @@ merged_data %>%
     axis.line = element_line(colour = "black"),
     legend.position = "bottom"
   ) +
-  scale_fill_manual(values = c("#1F77B4", "#FF7F0E", "#2CA02C", "#D62728")) +
+  scale_fill_manual(values = c("#FF7F0E", "#1F77B4","#2CA02C", "#D62728")) +
   coord_flip() +
-  coord_cartesian(expand=F)
+  coord_cartesian(expand=F) +
+  scale_x_continuous(breaks=c(0, 20, 40, 60, 74))
 
 ggsave("../results/eval_results.png")
 ```
