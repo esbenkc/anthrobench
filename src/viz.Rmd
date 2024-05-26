@@ -1,0 +1,60 @@
+---
+author: Esben Kran
+date: 2024-05-25
+---
+
+```{r}
+pacman::p_load(tidyverse,ggplot2,ggthemes)
+```
+
+```{r}
+# Get a list of all CSV files in the ../results/ directory
+csv_files <- list.files(path = "../results/", pattern = "\\.csv$", full.names = TRUE)
+
+# Function to read CSV file and add the file name as a column
+read_csv_with_filename <- function(file) {
+  read.csv(file) %>%
+    mutate(file_name = basename(file))
+}
+
+# Read all CSV files and merge them together
+merged_data <- map_dfr(csv_files, read_csv_with_filename)
+
+# Print the merged data
+print(merged_data)
+```
+
+```{r}
+merged_data %>%
+  group_by(file_name, evaluation) %>%
+  summarise(
+    count = n(),
+  ) %>%
+  ggplot() +
+  aes(fill = evaluation, y = count, x = file_name) +
+  geom_col() +
+  labs(
+    title = "Evaluation Counts by File",
+    x = "File Name",
+    y = "Count",
+    fill = "Evaluation"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    axis.title = element_text(size = 14),
+    axis.text = element_text(size = 12),
+    legend.title = element_text(size = 14),
+    legend.text = element_text(size = 12),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    axis.line = element_line(colour = "black"),
+    legend.position = "bottom"
+  ) +
+  scale_fill_manual(values = c("#1F77B4", "#FF7F0E", "#2CA02C", "#D62728")) +
+  coord_flip()
+
+ggsave("../results/eval_results.png")
+```
+
